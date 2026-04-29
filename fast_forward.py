@@ -3,6 +3,7 @@
 
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -87,6 +88,10 @@ class GitHubApp:
         return token
 
 
+def _sanitize(text: str) -> str:
+    return re.sub(r"https://x-access-token:[^@]+@", "https://***@", text)
+
+
 def _run(args: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(args, cwd=cwd, capture_output=True, text=True, check=True)
 
@@ -99,7 +104,8 @@ def _clone(
             ["git", "clone", "-b", branch, "--single-branch", url, str(dest)],
             cwd=dest.parent,
         )
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
+        print(f"  clone {branch}: {_sanitize(e.stderr.strip())}")
         return None
 
 
@@ -120,9 +126,6 @@ def fast_forward(app: GitHubApp, entry: RepoEntry) -> Result:
             _run(["git", "push", "origin", entry.destination], cwd=repo_dir)
             return Result(entry, Status.CREATED, f"created {entry.destination} from {entry.source}")
 
-        _run(["git", "config", "user.name", "assisted-installer-ci[bot]"], cwd=repo_dir)
-        _run(["git", "config", "user.email", "noreply@github.com"], cwd=repo_dir)
-
         before = _run(["git", "rev-parse", "HEAD"], cwd=repo_dir).stdout.strip()
 
         try:
@@ -138,7 +141,7 @@ def fast_forward(app: GitHubApp, entry: RepoEntry) -> Result:
         log = _run(
             ["git", "log", "--pretty=oneline", f"{before}..{after}"], cwd=repo_dir
         ).stdout.strip()
-        count = log.count("\n") + 1
+        count = len(log.splitlines())
 
         try:
             _run(["git", "push", "origin", entry.destination], cwd=repo_dir)
@@ -180,7 +183,7 @@ def main() -> None:
         try:
             result = fast_forward(app, entry)
         except Exception as e:
-            result = Result(entry, Status.FAILED, str(e))
+            result = Result(entry, Status.FAILED, _sanitize(str(e)))
         results.append(result)
         print(f"{result.status.value}: {result.message}")
 
