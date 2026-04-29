@@ -1,0 +1,10 @@
+[
+  {"org": "openshift", "repo": "assisted-service", "source": "master", "destination": "backplane-5.0"},
+  {"org": "openshift", "repo": "assisted-installer", "source": "master", "destination": "backplane-5.0"},
+  {"org": "openshift", "repo": "assisted-installer-agent", "source": "master", "destination": "backplane-5.0"},
+  {"org": "openshift", "repo": "assisted-image-service", "source": "main", "destination": "backplane-5.0"},
+  {"org": "openshift", "repo": "assisted-test-infra", "source": "master", "destination": "backplane-5.0"},
+  {"org": "openshift", "repo": "cluster-api-provider-agent", "source": "master", "destination": "backplane-5.0"},
+  {"org": "openshift", "repo": "image-based-install-operator", "source": "main", "destination": "backplane-5.0"},
+  {"org": "openshift-assisted", "repo": "cluster-api-provider-openshift-assisted", "source": "master", "destination": "backplane-5.0"}
+]
