@@ -50,7 +50,7 @@ class GitHubApp:
 
     def _generate_jwt(self) -> str:
         now = int(time.time())
-        payload = {"iat": now, "exp": now + 600, "iss": self._app_id}
+        payload = {"iat": now, "exp": now + 600, "iss": str(self._app_id)}
         return jwt.encode(payload, self._private_key, algorithm="RS256")
 
     def get_token(self, org: str) -> str:
