@@ -6,6 +6,6 @@
   {"org": "openshift", "repo": "assisted-test-infra", "source": "master", "destination": "backplane-5.0"},
   {"org": "openshift", "repo": "cluster-api-provider-agent", "source": "master", "destination": "backplane-5.0"},
   {"org": "openshift", "repo": "image-based-install-operator", "source": "main", "destination": "backplane-5.0"},
-  {"org": "openshift-assisted", "repo": "cluster-api-provider-openshift-assisted", "source": "master", "destination": "backplane-5.0"}
-  {"org": "rh-ecosystem-edge", "repo": "dpf-hcp-provisioner-operator", "source": "main", "destination":  "release-4.22"}
+  {"org": "openshift-assisted", "repo": "cluster-api-provider-openshift-assisted", "source": "master", "destination": "backplane-5.0"},
+  {"org": "rh-ecosystem-edge", "repo": "dpf-hcp-provisioner-operator", "source": "main", "destination": "release-4.22"}
 ]
