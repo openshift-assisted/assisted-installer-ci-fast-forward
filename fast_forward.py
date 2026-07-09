@@ -96,6 +96,10 @@ def _run(args: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(args, cwd=cwd, capture_output=True, text=True, check=True)
 
 
+def _stderr(e: subprocess.CalledProcessError) -> str:
+    return _sanitize(e.stderr.strip()) if e.stderr.strip() else "(no stderr)"
+
+
 def _clone(
     url: str, branch: str, dest: Path
 ) -> subprocess.CompletedProcess[str] | None:
@@ -123,15 +127,18 @@ def fast_forward(app: GitHubApp, entry: RepoEntry) -> Result:
             _run(["git", "config", "user.name", "assisted-installer-ci[bot]"], cwd=repo_dir)
             _run(["git", "config", "user.email", "noreply@github.com"], cwd=repo_dir)
             _run(["git", "checkout", "-b", entry.destination], cwd=repo_dir)
-            _run(["git", "push", "origin", entry.destination], cwd=repo_dir)
+            try:
+                _run(["git", "push", "origin", entry.destination], cwd=repo_dir)
+            except subprocess.CalledProcessError as e:
+                return Result(entry, Status.FAILED, f"created {entry.destination} locally but push failed: {_stderr(e)}")
             return Result(entry, Status.CREATED, f"created {entry.destination} from {entry.source}")
 
         before = _run(["git", "rev-parse", "HEAD"], cwd=repo_dir).stdout.strip()
 
         try:
             _run(["git", "pull", "--ff-only", "origin", entry.source], cwd=repo_dir)
-        except subprocess.CalledProcessError:
-            return Result(entry, Status.FAILED, "cannot fast-forward, branches may have diverged")
+        except subprocess.CalledProcessError as e:
+            return Result(entry, Status.FAILED, f"cannot fast-forward, branches may have diverged: {_stderr(e)}")
 
         after = _run(["git", "rev-parse", "HEAD"], cwd=repo_dir).stdout.strip()
 
@@ -145,8 +152,8 @@ def fast_forward(app: GitHubApp, entry: RepoEntry) -> Result:
 
         try:
             _run(["git", "push", "origin", entry.destination], cwd=repo_dir)
-        except subprocess.CalledProcessError:
-            return Result(entry, Status.FAILED, "fast-forwarded locally but push failed")
+        except subprocess.CalledProcessError as e:
+            return Result(entry, Status.FAILED, f"fast-forwarded locally but push failed: {_stderr(e)}")
 
         return Result(entry, Status.FORWARDED, f"{count} commit(s)\n{log}")
 
