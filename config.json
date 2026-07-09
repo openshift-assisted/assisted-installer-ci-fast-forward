@@ -8,5 +8,5 @@
   {"org": "openshift", "repo": "image-based-install-operator", "source": "main", "destination": "backplane-5.0"},
   {"org": "openshift-assisted", "repo": "cluster-api-provider-openshift-assisted", "source": "master", "destination": "backplane-5.0"},
   {"org": "rh-ecosystem-edge", "repo": "dpf-hcp-provisioner-operator", "source": "main", "destination": "release-4.23"},
-  {"org": "rh-ecosystem-edge", "repo": "openshift-dpf", "source": "main", "destination": "release-4.22"}
+  {"org": "rh-ecosystem-edge", "repo": "openshift-dpf", "source": "main", "destination": "release-4.23"}
 ]
